@@ -1,20 +1,12 @@
 import uuid
 from django.db import models
-
-from django.db import models
+from django.utils import timezone
 
 class Account(models.Model):
     #id = models.AutoField(primary_key=True)
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     code = models.CharField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
-    type = models.CharField(max_length=255, choices=[
-        ('asset', 'Asset'),
-        ('liability', 'Liability'),
-        ('equity', 'Equity'),
-        ('income', 'Income'),
-        ('expense', 'Expense'),
-    ])
     parent_id = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True)
     company_id = models.ForeignKey('ResCompany', on_delete=models.CASCADE)
     account_type_id = models.ForeignKey('AccountType', on_delete=models.CASCADE)
@@ -33,19 +25,23 @@ class AccountType(models.Model):
     #id = models.AutoField(primary_key=True)
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255)
-    type = models.CharField(max_length=255, choices=[
-        ('receivable', 'Receivable'),
-        ('payable', 'Payable'),
-        ('liquid', 'Liquid'),
-        ('fixed', 'Fixed'),
-        ('current', 'Current'),
-        ('non_current', 'Non-current'),
-    ])
     close_method = models.CharField(max_length=255, choices=[
         ('unreconciled', 'Unreconciled'),
         ('detail', 'Detail'),
         ('regular', 'Regular'),
     ])
+    category = models.ForeignKey('AccountCategory', on_delete=models.CASCADE, null=True)
+
+class AccountCategory(models.Model):
+    #id = models.AutoField(primary_key=True)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=255)
+    report = models.ForeignKey('Report', on_delete=models.CASCADE)
+
+class Report(models.Model):
+    #id = models.AutoField(primary_key=True)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=255)
 
 class AccountTax(models.Model):
     #id = models.AutoField(primary_key=True)
@@ -63,13 +59,6 @@ class AccountJournal(models.Model):
     #id = models.AutoField(primary_key=True)
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255)
-    type = models.CharField(max_length=255, choices=[
-        ('sale', 'Sale'),
-        ('purchase', 'Purchase'),
-        ('cash', 'Cash'),
-        ('bank', 'Bank'),
-        ('general', 'General'),
-    ])
     code = models.CharField(max_length=255)
     default_debit_account_id = models.ForeignKey('Account', on_delete=models.CASCADE, related_name='default_debit_account')
     default_credit_account_id = models.ForeignKey('Account', on_delete=models.CASCADE, related_name='default_credit_account')
@@ -78,8 +67,8 @@ class AccountMove(models.Model):
     #id = models.AutoField(primary_key=True)
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255)
-    journal_id = models.ForeignKey('AccountJournal', on_delete=models.CASCADE)
-    date = models.DateField()
+    journal_id = models.ForeignKey('AccountJournal', on_delete=models.CASCADE, related_name='journal', null=True)
+    date = models.DateField(default=timezone.now)
     line_ids = models.ManyToManyField('AccountMoveLine')
 
 class AccountMoveLine(models.Model):
