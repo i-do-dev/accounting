@@ -17,4 +17,4 @@ EXPOSE 8000
 # ENV DJANGO_SETTINGS_MODULE=myproject.settings
 
 # Run app.py when the container launches
-CMD ["sh", "-c", "python manage.py migrate && gunicorn myproject.wsgi:application --bind 0.0.0.0:8000"]
+CMD ["sh", "-c", "python manage.py migrate && gunicorn accounting.wsgi:application --bind 0.0.0.0:8000"]
