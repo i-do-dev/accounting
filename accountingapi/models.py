@@ -48,7 +48,7 @@ class AccountTax(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255)
     amount = models.FloatField()
-    account_id = models.ForeignKey('Account', on_delete=models.CASCADE)
+    #account_id = models.ForeignKey('Account', on_delete=models.CASCADE)
 
 class ResCompany(models.Model):
     #id = models.AutoField(primary_key=True)
