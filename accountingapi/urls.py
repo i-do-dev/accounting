@@ -14,7 +14,9 @@ router.register(r'account-moves', AccountMoveViewSet)
 router.register(r'account-groups', AccountGroupViewSet)
 router.register(r'reports', ReportViewSet)
 router.register(r'account-categories', AccountCategoryViewSet)
+router.register(r'account-types-by-category', AccountTypeByCategoryView, basename='account-types-by-category')
+router.register(r'companies', ResCompanyViewSet)
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('', include(router.urls))
 ]
